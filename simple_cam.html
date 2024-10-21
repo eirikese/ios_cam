@@ -23,23 +23,23 @@
 </head>
 <body>
 
-    <video id="video" autoplay></video>
+    <video id="video" autoplay playsinline muted></video>
 
     <script>
-        // Select the video element
         const video = document.getElementById('video');
 
-        // Request the camera stream
+        // Check for getUserMedia API support
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
                 .then(stream => {
                     video.srcObject = stream;
+                    video.play();
                 })
                 .catch(err => {
                     console.error("Error accessing the camera: ", err);
                 });
         } else {
-            alert("getUserMedia is not supported by your browser.");
+            alert("Your browser does not support getUserMedia.");
         }
     </script>
 
