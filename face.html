@@ -28,44 +28,47 @@
     <video id="video" autoplay playsinline muted></video>
     <canvas id="overlay"></canvas>
 
-    <!-- Load the face-api.js library -->
+    <!-- Load face-api.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
     
     <script>
         const video = document.getElementById('video');
-        const canvas = document.getElementById('overlay');
-        const displaySize = { width: video.width, height: video.height };
 
-        // Load models for face detection
+        // Load the models for face detection
         Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri('/models'), // Load Tiny Face Detector model
-            faceapi.nets.faceLandmark68Net.loadFromUri('/models')  // Load Face Landmark model
-        ]).then(startVideo);
+            faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+            faceapi.nets.faceLandmark68Net.loadFromUri('/models')
+        ]).then(startVideo).catch(err => console.error('Model loading error:', err));
 
-        // Function to start the video feed
+        // Function to start the video stream
         function startVideo() {
-            if (navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
                     .then(stream => {
                         video.srcObject = stream;
                         video.play();
                     })
-                    .catch(err => console.error("Error accessing the camera: ", err));
+                    .catch(err => {
+                        console.error("Error accessing the camera: ", err);
+                        alert("Error accessing the camera. Make sure you allow camera access.");
+                    });
             } else {
-                alert("Your browser does not support getUserMedia.");
+                alert("getUserMedia not supported on this browser.");
             }
         }
 
-        // Function to detect faces and draw them on the canvas
+        // Event listener to detect faces when the video starts playing
         video.addEventListener('play', () => {
             const canvas = faceapi.createCanvasFromMedia(video);
             document.body.append(canvas);
+
+            const displaySize = { width: video.width, height: video.height };
             faceapi.matchDimensions(canvas, displaySize);
 
             setInterval(async () => {
                 const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks();
                 const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                
+
                 canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
                 faceapi.draw.drawDetections(canvas, resizedDetections);
                 faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
