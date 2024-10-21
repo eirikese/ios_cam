@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>v2.1 Camera with Face Detection</title>
+    <title>Camera with Face Detection</title>
     <style>
         body {
             display: flex;
@@ -30,11 +30,11 @@
 
     <!-- Load face-api.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-    
+
     <script>
         const video = document.getElementById('video');
 
-        // Load the models for face detection
+        // Load the models for face detection from the /models directory
         Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri('models'),
             faceapi.nets.faceLandmark68Net.loadFromUri('models')
@@ -50,7 +50,7 @@
                     })
                     .catch(err => {
                         console.error("Error accessing the camera: ", err);
-                        alert("Error accessing the camera. Make sure you allow camera access.");
+                        alert("Error accessing the camera. Make sure camera permissions are granted.");
                     });
             } else {
                 alert("getUserMedia not supported on this browser.");
