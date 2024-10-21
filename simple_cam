@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera App</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        video {
+            width: 100%;
+            max-width: 600px;
+            border: 5px solid #333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <video id="video" autoplay></video>
+
+    <script>
+        // Select the video element
+        const video = document.getElementById('video');
+
+        // Request the camera stream
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(err => {
+                    console.error("Error accessing the camera: ", err);
+                });
+        } else {
+            alert("getUserMedia is not supported by your browser.");
+        }
+    </script>
+
+</body>
+</html>
